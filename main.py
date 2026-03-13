@@ -1,6 +1,13 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI()
+
+
+class Post(BaseModel):
+    title: str
+    body: str
+    published: bool = True
 
 
 @app.get("/")
@@ -24,10 +31,10 @@ def get_post(post_id: int):
 
 # POST /posts - 新增文章
 @app.post("/posts")
-def create_post(post: dict):
+def create_post(post: Post):
     return {"message": "新增成功", "data": post}
 
 
 @app.get("/items/{item_id}")
-def get_items(item_id: int, limit: int = 10, skip: int = 0, keyword: str | None = None):
+def get_items(item_id: int, limit: int, skip: int = 0, keyword: str | None = None):
     return {"id": item_id, "limit": limit, "skip": skip, "keyword": keyword}
