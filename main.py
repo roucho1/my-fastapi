@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -10,6 +10,13 @@ class Post(BaseModel):
     published: bool = True
 
 
+posts = [
+    {"id": 1, "title": "第一篇文章", "body": "內容一"},
+    {"id": 2, "title": "第二篇文章", "body": "內容二"},
+    {"id": 3, "title": "第三篇文章", "body": "內容三"},
+]
+
+
 @app.get("/")
 def read_root():
     return {"message": "Hello from FastAPI!"}
@@ -17,16 +24,15 @@ def read_root():
 
 @app.get("/posts")
 def get_posts():
-    return [
-        {"id": 1, "title": "第一篇文章", "body": "內容一"},
-        {"id": 2, "title": "第二篇文章", "body": "內容二"},
-        {"id": 3, "title": "第三篇文章", "body": "內容三"},
-    ]
+    return posts
 
 
 @app.get("/posts/{post_id}")
 def get_post(post_id: int):
-    return {"id": post_id, "title": f"第 {post_id} 篇文章", "body": "文章內容"}
+    post = next((p for p in posts if p["id"] == post_id), None)
+    if post is None:
+        raise HTTPException(status_code=404, detail="找不到這篇文章")
+    return post
 
 
 # POST /posts - 新增文章
