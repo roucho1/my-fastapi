@@ -1,6 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from database import engine
+import models
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
